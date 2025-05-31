@@ -1,0 +1,180 @@
+# Property Management Solution – Architecture Document
+
+
+
+## 1. Overview
+
+The Property Management solution is a modular, cloud-ready web application for managing property listings and related data. It consists of a .NET 9-based backend (RESTful Web API) and a React/TypeScript frontend (SPA) built with Vite. The architecture emphasizes separation of concerns, maintainability, extensibility, and security.
+
+
+
+## 2. Component Diagram
+
+
+
+## 3. High-Level Design (HLD)
+
+### 3.1 Solution Structure
+
+| Project Name                       | Type                | Description                                                                 |
+|-------------------------------------|---------------------|-----------------------------------------------------------------------------|
+| PropertyManagement.WebAPI           | ASP.NET Core WebAPI | Exposes RESTful endpoints for property management operations.                |
+| PropertyManagement.Services         | .NET Class Library  | Contains business logic and service implementations.                         |
+| PropertyManagement.Helper           | .NET Class Library  | Provides shared utilities, configuration, and middleware.                    |
+| PropertyManagement.WebUi            | React/Vite App      | Frontend SPA for user interaction, built with React and TypeScript.          |
+
+### 3.2 Key Technologies
+
+- **Backend:** .NET 9, ASP.NET Core, C# 13
+- **Frontend:** React 18+, TypeScript, Vite
+- **API Documentation:** Swashbuckle (Swagger)
+- **Serialization:** Newtonsoft.Json
+- **Cloud Storage:** Azure Blob Storage (via Azure SDK)
+- **Dependency Injection:** Microsoft.Extensions.DependencyInjection
+- **Configuration:** Microsoft.Extensions.Configuration
+- **Logging:** Custom LoggerService
+
+### 3.3 Major Flows
+
+- **User** interacts with the **React SPA** in the browser.
+- **SPA** sends HTTP requests to the **WebAPI** endpoints.
+- **WebAPI** controllers receive requests, validate, and delegate to **Services**.
+- **Services** perform business logic, interact with **Azure Blob Storage** (via SDK), and return results.
+- **Helper** provides shared configuration, logging, and error handling.
+- **WebAPI** returns responses to the **SPA**.
+- **SPA** updates the UI based on API responses.
+
+---
+
+## 4. Low-Level Design (LLD)
+
+### 4.1 PropertyManagement.WebAPI
+
+- **Program.cs**
+  - Configures services, middleware, and application pipeline.
+  - Loads and binds configuration (appsettings).
+  - Registers Azure Blob Storage and custom services.
+  - Sets up Swagger and CORS.
+  - Adds custom exception middleware.
+
+- **ExtensionMethods**
+  - `ServiceExtensions.cs`: Registers application services.
+  - `RepositoryExtensions.cs`: (Placeholder for repository registration.)
+  - `WebApplicationBuilderExtensions.cs`: Configures app settings and Swagger.
+  - `WebApplicationExtensions.cs`: Adds development-only middleware (Swagger UI).
+
+- **Controllers**
+  - Expose RESTful endpoints for property management operations.
+  - Use dependency-injected services for business logic.
+
+### 4.2 PropertyManagement.Services
+
+- **ExtensionMethods/IServiceCollectionExtensions.cs**
+  - Registers Azure Blob Storage client and storage data service.
+  - Validates configuration for Blob Storage.
+
+- **Services**
+  - Business logic and integration with storage and other resources.
+  - Example: `AzureBlobStorageService` implements `IStorageDataService`.
+
+### 4.3 PropertyManagement.Helper
+
+- **Configurations/ApplicationOptionsSetup.cs**
+  - Implements the options pattern for strongly-typed configuration.
+
+- **ExtensionMethods**
+  - Centralizes configuration and middleware setup.
+
+- **Middlewares**
+  - Custom exception middleware for global error handling.
+
+- **Models**
+  - Shared models for configuration and data transfer.
+
+### 4.4 PropertyManagement.WebUi
+
+- **index.html**
+  - Entry point for the SPA.
+
+- **README.md / CHANGELOG.md**
+  - Documents project structure, setup, and usage.
+
+- **src/**
+  - `assets/`: Static assets.
+  - `components/`: Reusable React components.
+  - `pages/`: Page-level components.
+  - `services/`: API service functions.
+  - `styles/`: Global and component-specific styles.
+  - `utils/`: Utility functions.
+  - `App.tsx`: Main application component.
+  - `main.tsx`: Application entry point.
+  - `vite.config.ts`: Vite configuration (including dev server port).
+
+---
+
+## 5. Flow Architecture
+
+### 5.1 Sequence Example: Uploading a Property Image
+
+1. User selects an image in the React UI.
+2. React calls the WebAPI endpoint `/api/properties/{id}/upload-image`.
+3. Controller receives the file, calls the storage service.
+4. Storage service uses Azure Blob Storage SDK to upload the file.
+5. On success, service returns the file URL.
+6. Controller returns the URL to the frontend.
+7. React updates the property listing with the new image.
+
+### 5.2 Error Handling Flow
+
+- All unhandled exceptions in the WebAPI are caught by custom middleware.
+- Middleware logs the error and returns a standardized error response.
+- The frontend displays a user-friendly error message.
+
+---
+
+## 6. Security
+
+- HTTPS redirection is enforced.
+- CORS is configured to restrict allowed origins.
+- Sensitive configuration (e.g., Azure Blob Storage SAS tokens) is managed via secure app settings.
+- Exception middleware prevents leaking sensitive error details.
+
+---
+
+## 7. Extensibility & Maintainability
+
+- New features are added to the Services layer and exposed via new API endpoints.
+- Shared logic is placed in the Helper project for reuse.
+- The architecture supports adding new projects (e.g., Data Access, Domain Models) as needed.
+- The frontend is modular, supporting new pages and components with minimal coupling.
+
+---
+
+## 8. Deployment
+
+- **Backend:** Deployable as a container or to Azure App Service.
+- **Frontend:** Built static assets can be served via any static web server or integrated with Azure Static Web Apps.
+- **Configuration:** Environment-specific settings are supported via appsettings files and environment variables.
+
+---
+
+## 9. Development & Testing
+
+- **Backend:** Unit and integration tests should be added for services and controllers.
+- **Frontend:** Component and end-to-end tests can be added using Jest, React Testing Library, or Cypress.
+- **API Testing:** Swagger UI provides interactive API testing.
+
+---
+
+## 10. References
+
+- [ASP.NET Core Documentation](https://docs.microsoft.com/aspnet/core)
+- [React Documentation](https://react.dev/)
+- [Azure Blob Storage Documentation](https://docs.microsoft.com/azure/storage/blobs/)
+- [Swashbuckle Documentation](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)
+
+---
+
+**This document reflects the current state of the solution as observed in the codebase and project files. Update as the architecture evolves.**
+
+---
