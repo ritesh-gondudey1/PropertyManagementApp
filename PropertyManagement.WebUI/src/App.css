@@ -1,0 +1,68 @@
+.app {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.property {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.space {
+    margin-bottom: 15px;    
+    border-radius: 5px;
+    cursor: pointer;
+    color: #2a5db0;
+}
+
+
+h3, h4 {
+    cursor: pointer;
+    color: #2a5db0;
+    display: flex;
+    align-items: center;
+}
+
+.property-details {
+    margin-left: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-left: 3px solid #2a5db0;
+}
+
+.rent-roll {
+    margin-left: 20px;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td {
+    padding: 4px 10px;
+    border: 1px solid #eee;
+}
+
+.loading, .error {
+    text-align: center;
+    padding: 40px;
+    font-size: 1.2rem;
+}
+
+.error {
+    color: #d32f2f;
+}
+
+.rent {
+    color: black;
+    cursor: text;
+}
+
+.rent > ul{
+    margin-bottom : 0;
+
+}
